@@ -6,6 +6,7 @@ using MLAPI;
 public class PlayerNetwokHandler : NetworkBehaviour
 {
     public GameObject[] _gameObjectsToDisable;
+    public BoxCollider b_coll;
     // Start is called before the first frame update
     void Start()
     {
@@ -13,6 +14,7 @@ public class PlayerNetwokHandler : NetworkBehaviour
             foreach(GameObject go in _gameObjectsToDisable){
                 go.transform.gameObject.SetActive(false);
             }
+            b_coll.enabled = false;
         }
     }
 

@@ -45,10 +45,12 @@ public class PlayerHandler : NetworkBehaviour
                     currentSpeed = waterSpeed;
                 else
                     currentSpeed = moveSpeed;
-                    
-                if(last_x != transform.position.x || last_z != transform.position.z){
-                    float y_pos = other.bounds.max.y+ (transform.lossyScale.y/2);
-                    transform.position = new Vector3(transform.position.x, y_pos , transform.position.z);
+                
+                if(other.tag != "Player"){
+                    if(last_x != transform.position.x || last_z != transform.position.z){
+                        float y_pos = other.bounds.max.y+ (transform.lossyScale.y/2);
+                        transform.position = new Vector3(transform.position.x, y_pos , transform.position.z);
+                    }
                 }
             }
         }
