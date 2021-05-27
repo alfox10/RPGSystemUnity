@@ -8,7 +8,6 @@ public class PlayerHandler : NetworkBehaviour
 {
 
     public float moveSpeed = 2f;
-
     private float last_x,last_z;
     private float waterSpeed = 1f;
     private float currentSpeed;
@@ -26,7 +25,7 @@ public class PlayerHandler : NetworkBehaviour
             setMeshServerRpc(token_id);
         }
     }
-    
+
     // Update is called once per frame
     void Update (){
         if(IsLocalPlayer){
