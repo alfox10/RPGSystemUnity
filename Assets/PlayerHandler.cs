@@ -12,6 +12,7 @@ public class PlayerHandler : NetworkBehaviour
     private float waterSpeed = 1f;
     private float currentSpeed;
     private CharacterController cc;
+    public string m;
 
    
 
@@ -78,7 +79,7 @@ public class PlayerHandler : NetworkBehaviour
 
     [ClientRpc]
     void setMeshClientRpc(int t_id){
-        gameObject.GetComponent<Renderer>().material = Resources.Load("tokens/"+t_id, typeof(Material)) as Material;        
+        gameObject.GetComponent<Renderer>().material = Resources.Load("tokens/"+t_id, typeof(Material)) as Material; 
     }
 
 }
