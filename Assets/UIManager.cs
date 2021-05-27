@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using MLAPI;
+using MLAPI.Messaging;
+using System;
 
 public class UIManager : NetworkBehaviour
 {
@@ -65,6 +67,8 @@ public class UIManager : NetworkBehaviour
     private string gameName;
     private string mana_type;
 
+    private Image npc_image;
+
     public class DiceFormat{
         public int initialSprite;
         public int minRange;
@@ -95,7 +99,6 @@ public class UIManager : NetworkBehaviour
             gameName = PlayerPrefs.GetString("game");
             setManaType();
             diceGameCtl = GameObject.Find("DiceImageController");
-            chat_text = GameObject.Find("chat_text").GetComponent<Text>();
             dgc = diceGameCtl.GetComponent<DiceGameController>();
             //test.sprite = Resources.Load("item_icons/rings", typeof(Sprite)) as Sprite;
             player_id = PlayerPrefs.GetInt("player_id");
@@ -110,6 +113,10 @@ public class UIManager : NetworkBehaviour
                 gm.onClick.AddListener(openCloseGMCommands);
             } else {
                 gm_obj.transform.gameObject.SetActive(false);
+                GameObject[] _onlyGM = GameObject.FindGameObjectsWithTag("npc_canvas_only_gm");
+                foreach(GameObject _oGM in _onlyGM){
+                    _oGM.transform.gameObject.SetActive(false);
+                }
             }
             close_button = close_button_obj.GetComponent<Button>();
             close_button.onClick.AddListener(closeRoll);
@@ -259,21 +266,21 @@ public class UIManager : NetworkBehaviour
 
     void rollDice(){
         if(speed_scale > 0){
-             dice.transform.localScale = Vector3.Lerp (dice.transform.localScale, Vector3.one*Random.Range(0.1f,0.3f), speed_scale);
+             dice.transform.localScale = Vector3.Lerp (dice.transform.localScale, Vector3.one* UnityEngine.Random.Range(0.1f,0.3f), speed_scale);
              speed_scale -= Time.deltaTime*3;
         }
         
         
         if(smoothing > 0){
-            float targetX = Random.Range(-80f,80f);
-            float targetY = Random.Range(-80f,80f);
+            float targetX = UnityEngine.Random.Range(-80f,80f);
+            float targetY = UnityEngine.Random.Range(-80f,80f);
             Vector3 vv = new Vector3(targetX, targetY, 0f);
             dice.transform.localPosition = Vector3.Lerp(dice.transform.localPosition, vv, smoothing/smoth_divider);
             dice.transform.Rotate( Vector3.forward* Time.deltaTime * 300 * smoothing);
             smoothing -= Time.deltaTime;
             smoth_divider += Time.deltaTime*5;
             
-            idx = Random.Range(minDiceFace,maxDiceFace);
+            idx = UnityEngine.Random.Range(minDiceFace,maxDiceFace);
             im.sprite = dgc.GetSprite(idx);
             
 
@@ -282,12 +289,56 @@ public class UIManager : NetworkBehaviour
         if(smoothing < 0 && speed_scale < 0){
             diceResult = (idx+1) - minDiceFace;
             print("STOP ROLLED with result: "+ diceResult);
-            chat_text.text= chat_text.text+"\n"+pgStats.name+" rolled "+diceResult+" on a "+diceNameFormat;
+            setChatResultServerRpc("\n"+pgStats.name+" rolled "+diceResult+" on a "+diceNameFormat);
             isRolling = false;
             speed_scale = __INIT__SPEED__SCALE;
             smoothing = __INIT__SMOOTHING;
             smoth_divider = __INIT__SMOOTH__DIVIDER;
             dice.transform.localScale = Vector3.Lerp (dice.transform.localScale, Vector3.one, 0.1f);
         }
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    public void setChatResultServerRpc(string text_to_add){
+
+        setChatResultClientRpc(text_to_add);
+    }
+
+    [ClientRpc]
+    public void setChatResultClientRpc(string text_to_add){
+
+        chat_text = GameObject.FindGameObjectWithTag("chat").GetComponent<Text>();
+        chat_text.text = chat_text.text + text_to_add;
+    }
+
+
+    //dice_holder
+    [ServerRpc(RequireOwnership = false)]
+    public void setCombatDieSpriteServerRpc(int d_face, int npc_id){
+        setCombatDieSpriteClientRpc(d_face, npc_id);
+    }
+
+    [ClientRpc]
+    public void setCombatDieSpriteClientRpc(int d_face, int npc_id){
+
+        GameObject[] npcs = GameObject.FindGameObjectsWithTag("dice_holder");
+
+        foreach(GameObject npc in npcs){
+            int local_npc_id = npc.GetComponent<NPCRollController>().npc_id;
+            if(npc_id == local_npc_id){
+                npc_image = npc.GetComponent<Image>();
+                if(npc_image == null){
+                    Debug.Log("no image found");
+                } else {
+                    diceGameCtl = GameObject.FindWithTag("DiceImageController");
+                    dgc = diceGameCtl.GetComponent<DiceGameController>();
+                    Sprite s = dgc.GetSprite(d_face);
+                    npc_image.sprite = s;
+                }              
+            }
+        }
+
+
     }
 }

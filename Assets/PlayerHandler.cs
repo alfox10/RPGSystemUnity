@@ -8,10 +8,13 @@ public class PlayerHandler : NetworkBehaviour
 {
 
     public float moveSpeed = 2f;
+
     private float last_x,last_z;
     private float waterSpeed = 1f;
     private float currentSpeed;
     private CharacterController cc;
+
+   
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +26,7 @@ public class PlayerHandler : NetworkBehaviour
             setMeshServerRpc(token_id);
         }
     }
-
+    
     // Update is called once per frame
     void Update (){
         if(IsLocalPlayer){
@@ -68,24 +71,15 @@ public class PlayerHandler : NetworkBehaviour
         }
     }
 
-    private void Move(){
-        Vector3 input = new Vector3(Input.GetAxis("Horizontal"),0,Input.GetAxis("Vertical"));
-        input = Vector3.ClampMagnitude(input, 1f);
-        Vector3 move = transform.TransformVector(input * currentSpeed);
-        cc.Move(move * Time.deltaTime);
-    }
-
 //(RequireOwnership = false)
     [ServerRpc]
     void setMeshServerRpc(int t_id){
-        Debug.Log("called ServerRpc");
         setMeshClientRpc(t_id);
     }
 
     [ClientRpc]
     void setMeshClientRpc(int t_id){
-        Debug.Log("called ClientRpc");
-        gameObject.GetComponent<Renderer>().material = Resources.Load("tokens/"+t_id, typeof(Material)) as Material;
+        gameObject.GetComponent<Renderer>().material = Resources.Load("tokens/"+t_id, typeof(Material)) as Material;        
     }
 
 }

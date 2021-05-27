@@ -26,8 +26,6 @@ public class DBManager : MonoBehaviour
     }
 
     void checkDataAndSend(){
-        Debug.Log(user.text);
-        Debug.Log(pass.text);
         if(!string.IsNullOrEmpty(user.text) && !string.IsNullOrEmpty(pass.text)){
              StartCoroutine(submitData());
         }

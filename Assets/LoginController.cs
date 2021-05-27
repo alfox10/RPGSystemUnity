@@ -24,20 +24,21 @@ public class LoginController : MonoBehaviour
     
 
     private void connectAndLogin(string whoami){
-        if(whoami == "host"){
-            NetworkManager.Singleton.StartHost();
-            foreach ( GameObject go in _objToActivate){
-                    go.SetActive(true); 
-            }
-            foreach ( GameObject go in _objToDeactivate){
-                go.SetActive(false);
-            }
+        if(whoami == "host"){ 
+                NetworkManager.Singleton.StartHost();
+                foreach ( GameObject go in _objToActivate){
+                        go.SetActive(true); 
+                }
+                foreach ( GameObject go in _objToDeactivate){
+                    go.SetActive(false);
+                }
+
 
         } else {
-            NetworkManager.Singleton.StartClient();
-            foreach ( GameObject go in _objToDeactivate){
-                go.SetActive(false);
-            }
+                NetworkManager.Singleton.StartClient();
+                foreach ( GameObject go in _objToDeactivate){
+                    go.SetActive(false);
+                }
         }
 
     }

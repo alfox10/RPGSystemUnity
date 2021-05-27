@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class DiceButtonController : MonoBehaviour
 {
 
@@ -22,9 +23,4 @@ public class DiceButtonController : MonoBehaviour
         npc.SetSprite(dn);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

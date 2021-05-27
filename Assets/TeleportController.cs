@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MLAPI;
+using MLAPI.Messaging;
 
-public class TeleportController : MonoBehaviour
+public class TeleportController : NetworkBehaviour
 {
     [Header("Player")]
     public Transform player;
@@ -29,8 +31,19 @@ public class TeleportController : MonoBehaviour
         Destroy(_template);
 
     }
-    private void addTeleportCoordinates(GameObject spawn){
-        player.position = spawn.transform.position;
+    private void addTeleportCoordinates(GameObject spawn){ 
+        Vector3 newpos = spawn.transform.position;
+        TeleportAllPlayersClientRpc(newpos);
+    }
+
+
+    [ClientRpc]
+    void TeleportAllPlayersClientRpc(Vector3 spawn){
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach(GameObject pg in players){
+            Vector3 offset = new Vector3(Random.Range(-3,3),0,Random.Range(-3,3));
+            pg.transform.position = spawn+offset;
+        }
     }
 
     // Update is called once per frame

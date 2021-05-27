@@ -10,6 +10,7 @@ public class NPCRollController : MonoBehaviour
     public float roll_time;
     public Text npc_name;
     public Text chat_text;
+    public int npc_id;
 
     //private
     private DiceGameController dgc;
@@ -19,18 +20,20 @@ public class NPCRollController : MonoBehaviour
     private int idx;
     private string current_dice_type;
     private int diceResult;
+    private UIManager ui;
 
     void Start()
     {
+        ui = GameObject.FindGameObjectWithTag("UIManager").GetComponent<UIManager>();
         current_dice_type = "d20";
+        isRolling = false;
+        local_roll_time = roll_time;
+        diceGameCtl = GameObject.FindGameObjectWithTag("DiceImageController");
         dgc = diceGameCtl.GetComponent<DiceGameController>();
         im = GetComponent<Image>();
         im.sprite = dgc.GetSprite(0);
-        isRolling = false;
-        local_roll_time = roll_time;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(isRolling)
@@ -38,25 +41,27 @@ public class NPCRollController : MonoBehaviour
     }
 
     void rollDice(){
-       // if((int)(Time.deltaTime*100) % 2 == 0){
-            int min_result = dgc.GetDiceInfo(current_dice_type).startImage;
-            int max_result = dgc.GetDiceInfo(current_dice_type).endImage;
-            idx = Random.Range(min_result,max_result);
-            im.sprite = dgc.GetSprite(idx);
-       // }
+        int min_result = dgc.GetDiceInfo(current_dice_type).startImage;
+        int max_result = dgc.GetDiceInfo(current_dice_type).endImage;
+        idx = Random.Range(min_result,max_result);
+        //im.sprite = dgc.GetSprite(idx);
+        ui.setCombatDieSpriteServerRpc(idx, npc_id);
+
         local_roll_time -= Time.deltaTime*3;
 
         if(local_roll_time < 0){
             diceResult = (idx+1) - dgc.GetDiceInfo(current_dice_type).startImage;
             isRolling = false;
-            chat_text.text= chat_text.text+"\n"+npc_name.text+" rolled "+diceResult+" on a "+current_dice_type;
             local_roll_time = roll_time;
+            ui.setChatResultServerRpc("\n"+npc_name.text+" rolled "+diceResult+" on a "+current_dice_type);
         }
     }
 
     public void SetSprite(string diceType){
-        current_dice_type = diceType;
-        im.sprite = dgc.GetSprite(dgc.GetDiceInfo(current_dice_type).startImage);
-        isRolling = true;
+            current_dice_type = diceType;
+            im.sprite = dgc.GetSprite(dgc.GetDiceInfo(current_dice_type).startImage);
+            isRolling = true;
     }
+
+
 }

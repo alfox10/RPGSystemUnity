@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
+using MLAPI.Messaging;
 
 public class PlayerNetwokHandler : NetworkBehaviour
 {
@@ -10,6 +11,7 @@ public class PlayerNetwokHandler : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("Clearing obj in common");
         if(!IsLocalPlayer){
             foreach(GameObject go in _gameObjectsToDisable){
                 go.transform.gameObject.SetActive(false);
@@ -17,5 +19,6 @@ public class PlayerNetwokHandler : NetworkBehaviour
             b_coll.enabled = false;
         }
     }
+
 
 }
