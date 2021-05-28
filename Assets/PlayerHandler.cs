@@ -12,7 +12,8 @@ public class PlayerHandler : NetworkBehaviour
     private float waterSpeed = 1f;
     private float currentSpeed;
     private CharacterController cc;
-    public string m;
+    private int _playersCount;
+
 
    
 
@@ -23,6 +24,8 @@ public class PlayerHandler : NetworkBehaviour
             currentSpeed = moveSpeed;
             cc = GetComponent<CharacterController>();
             int token_id = PlayerPrefs.GetInt("player_id");
+            _playersCount = GameObject.FindGameObjectsWithTag("Player").Length;
+            Debug.Log("Message from : "+token_id+" current players : "+_playersCount);
             setMeshServerRpc(token_id);
         }
     }
@@ -32,6 +35,18 @@ public class PlayerHandler : NetworkBehaviour
         if(IsLocalPlayer){
             transform.Translate(Vector3.forward * Time.deltaTime * Input.GetAxis("Vertical")* currentSpeed);
             transform.Translate(Vector3.right * Time.deltaTime * Input.GetAxis("Horizontal")* currentSpeed);
+        }
+    }
+
+    void FixedUpdate() {
+        if(IsLocalPlayer){
+            int _currentPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
+            if(_playersCount < _currentPlayers){
+                _playersCount = _currentPlayers;
+                int token_id = PlayerPrefs.GetInt("player_id");
+                Debug.Log("Message from : "+token_id+" current players : "+_playersCount);
+                setMeshServerRpc(token_id);
+            }
         }
     }
 
