@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
+using MLAPI.Prototyping;
 
 public class PlayerHandler : NetworkBehaviour
 {
@@ -18,7 +19,7 @@ public class PlayerHandler : NetworkBehaviour
 
    
 
-    // Start is called before the first frame update
+    
     void Start()
     {
         if(IsLocalPlayer){
@@ -26,11 +27,11 @@ public class PlayerHandler : NetworkBehaviour
             token_id = PlayerPrefs.GetInt("player_id");
             _playersCount = GameObject.FindGameObjectsWithTag("Player").Length;
             setMeshServerRpc(token_id);
-            setPositionServerRpc(transform.localPosition, token_id);
+            setPositionServerRpc(transform.position, transform.rotation);
         }
     }
 
-    // Update is called once per frame
+    
     void Update (){
         if(IsLocalPlayer){
             transform.Translate(Vector3.forward * Time.deltaTime * Input.GetAxis("Vertical")* currentSpeed);
@@ -47,7 +48,7 @@ public class PlayerHandler : NetworkBehaviour
             } else if(_playersCount < _currentPlayers){
                 _playersCount = _currentPlayers;
                 setMeshServerRpc(token_id);
-                setPositionServerRpc(transform.localPosition, token_id);
+                setPositionServerRpc(transform.position, transform.rotation);
             }
         }
     }
@@ -99,15 +100,14 @@ public class PlayerHandler : NetworkBehaviour
     }
 
 
-    [ServerRpc]
-    void setPositionServerRpc(Vector3 pos, int tok){
-        setPositionClientRpc(pos, tok);
+    [ServerRpc(RequireOwnership = false)]
+    void setPositionServerRpc(Vector3 pos, Quaternion rot){
+        setPositionClientRpc(pos, rot);
     }
 
     [ClientRpc]
-    void setPositionClientRpc(Vector3 pos, int tok){
-        Debug.Log("Moving "+tok+"\n NewPos : "+pos+"  \n LocalPos : "+gameObject.transform.localPosition);
-        gameObject.transform.localPosition = pos;
+    void setPositionClientRpc(Vector3 pos, Quaternion rot){
+        gameObject.GetComponent<NetworkTransform>().Teleport(pos, rot);
         
     }
 

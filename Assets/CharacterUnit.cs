@@ -11,9 +11,9 @@ public class CharacterUnit : NetworkBehaviour
             GameObject[] mobs = GameObject.FindGameObjectsWithTag("enemy");
             Debug.Log("MOBS COUNT : "+mobs.Length);
             foreach (var mob in mobs){
-                //if(!UnitSelection.Instance.unitList.Contains(mob)){
+                if(!UnitSelection.Instance.unitList.Contains(mob)){
                     UnitSelection.Instance.unitList.Add(mob);
-               // }
+                }
             }
         } 
     }
@@ -32,7 +32,8 @@ public class CharacterUnit : NetworkBehaviour
     [ClientRpc]
     public void AddNewUnitClientRpc(){
         Debug.Log("Adding new Player ::Selection");
-        UnitSelection.Instance.unitList.Add(this.gameObject);
+        if(!UnitSelection.Instance.unitList.Contains(this.gameObject))
+            UnitSelection.Instance.unitList.Add(this.gameObject);
     }
     [ServerRpc(RequireOwnership = false)]
     public void RemoveNewUnitServerRpc(){
