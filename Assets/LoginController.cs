@@ -8,7 +8,9 @@ using MLAPI;
 public class LoginController : MonoBehaviour
 {
     [Header("Object Arrays")]
-    public GameObject[] _objToActivate;
+    public GameObject[] _objToActivateAll;
+
+    public GameObject[] _objToActivateHostOnly;
     public GameObject[] _objToDeactivate;
 
     [Header("Gui controller")]
@@ -26,7 +28,10 @@ public class LoginController : MonoBehaviour
     private void connectAndLogin(string whoami){
         if(whoami == "host"){ 
                 NetworkManager.Singleton.StartHost();
-                foreach ( GameObject go in _objToActivate){
+                foreach ( GameObject go in _objToActivateHostOnly){
+                        go.SetActive(true); 
+                }
+                foreach ( GameObject go in _objToActivateAll){
                         go.SetActive(true); 
                 }
                 foreach ( GameObject go in _objToDeactivate){
@@ -36,6 +41,9 @@ public class LoginController : MonoBehaviour
 
         } else {
                 NetworkManager.Singleton.StartClient();
+                foreach ( GameObject go in _objToActivateAll){
+                        go.SetActive(true); 
+                }
                 foreach ( GameObject go in _objToDeactivate){
                     go.SetActive(false);
                 }

@@ -11,7 +11,6 @@ public class PlayerHandler : NetworkBehaviour
     private float last_x,last_z;
     private float waterSpeed = 1f;
     private float currentSpeed;
-    private CharacterController cc;
     private int _playersCount;
 
 
@@ -22,11 +21,10 @@ public class PlayerHandler : NetworkBehaviour
     {
         if(IsLocalPlayer){
             currentSpeed = moveSpeed;
-            cc = GetComponent<CharacterController>();
             int token_id = PlayerPrefs.GetInt("player_id");
             _playersCount = GameObject.FindGameObjectsWithTag("Player").Length;
-            Debug.Log("Message from : "+token_id+" current players : "+_playersCount);
             setMeshServerRpc(token_id);
+            setPositionServerRpc(transform.localPosition, token_id);
         }
     }
 
@@ -41,17 +39,22 @@ public class PlayerHandler : NetworkBehaviour
     void FixedUpdate() {
         if(IsLocalPlayer){
             int _currentPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
-            if(_playersCount < _currentPlayers){
+            if(_playersCount > _currentPlayers){
+                _playersCount = _currentPlayers;
+               
+            } else if(_playersCount < _currentPlayers){
                 _playersCount = _currentPlayers;
                 int token_id = PlayerPrefs.GetInt("player_id");
-                Debug.Log("Message from : "+token_id+" current players : "+_playersCount);
                 setMeshServerRpc(token_id);
+                setPositionServerRpc(transform.localPosition, token_id);
             }
         }
     }
 
     private void TriggerHandler(Collider other){
         if(IsLocalPlayer){
+            if(other.tag == "Player")
+                return;
             bool isInCollisionArray = other.tag == "collider_obj";
             if(isInCollisionArray){
                 transform.Translate(Vector3.forward * Time.deltaTime * Input.GetAxis("Vertical")* currentSpeed * -1);
@@ -61,15 +64,12 @@ public class PlayerHandler : NetworkBehaviour
             }else{
                 if(other.tag == "water")
                     currentSpeed = waterSpeed;
-                else
-                    currentSpeed = moveSpeed;
-                
-                if(other.tag != "Player"){
-                    if(last_x != transform.position.x || last_z != transform.position.z){
+                else if(last_x != transform.position.x || last_z != transform.position.z){
                         float y_pos = other.bounds.max.y+ (transform.lossyScale.y/2);
                         transform.position = new Vector3(transform.position.x, y_pos , transform.position.z);
+                        currentSpeed = moveSpeed;
                     }
-                }
+                
             }
         }
     }
@@ -95,6 +95,19 @@ public class PlayerHandler : NetworkBehaviour
     [ClientRpc]
     void setMeshClientRpc(int t_id){
         gameObject.GetComponent<Renderer>().material = Resources.Load("tokens/"+t_id, typeof(Material)) as Material; 
+    }
+
+
+    [ServerRpc]
+    void setPositionServerRpc(Vector3 pos, int tok){
+        setPositionClientRpc(pos, tok);
+    }
+
+    [ClientRpc]
+    void setPositionClientRpc(Vector3 pos, int tok){
+        Debug.Log("Moving "+tok+"\n NewPos : "+pos+"  \n LocalPos : "+gameObject.transform.localPosition);
+        gameObject.transform.localPosition = pos;
+        
     }
 
 }

@@ -34,6 +34,7 @@ public class UIManager : NetworkBehaviour
     public Text hp_gui;
     public Text omens_gui;
     public GameObject gm_obj;
+    public GameObject combat_system;
     public Button add_hp;
     public Button remove_hp;
     public Button add_omens;
@@ -66,6 +67,7 @@ public class UIManager : NetworkBehaviour
     private List<DiceFormat> diceSwitchHandler;
     private string gameName;
     private string mana_type;
+    private Button combat_button;
 
     private Image npc_image;
 
@@ -109,9 +111,12 @@ public class UIManager : NetworkBehaviour
             roll_button = roll_button_obj.GetComponent<Button>();
             roll_button.onClick.AddListener(rollOnButtonClick);
             if(IsHost){
+                combat_button = combat_system.GetComponent<Button>();
+                combat_button.onClick.AddListener(startEndCombat);
                 gm = gm_obj.GetComponent<Button>();
                 gm.onClick.AddListener(openCloseGMCommands);
             } else {
+                combat_system.gameObject.SetActive(false);
                 gm_obj.transform.gameObject.SetActive(false);
                 GameObject[] _onlyGM = GameObject.FindGameObjectsWithTag("npc_canvas_only_gm");
                 foreach(GameObject _oGM in _onlyGM){
@@ -140,6 +145,9 @@ public class UIManager : NetworkBehaviour
         }
     }
 
+    void startEndCombat(){
+
+    }
     public class PGid{
         public int id;
     }
