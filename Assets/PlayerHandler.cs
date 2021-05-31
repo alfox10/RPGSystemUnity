@@ -13,6 +13,8 @@ public class PlayerHandler : NetworkBehaviour
     private float currentSpeed;
     private int _playersCount;
 
+    private int token_id;
+
 
    
 
@@ -21,7 +23,7 @@ public class PlayerHandler : NetworkBehaviour
     {
         if(IsLocalPlayer){
             currentSpeed = moveSpeed;
-            int token_id = PlayerPrefs.GetInt("player_id");
+            token_id = PlayerPrefs.GetInt("player_id");
             _playersCount = GameObject.FindGameObjectsWithTag("Player").Length;
             setMeshServerRpc(token_id);
             setPositionServerRpc(transform.localPosition, token_id);
@@ -44,7 +46,6 @@ public class PlayerHandler : NetworkBehaviour
                
             } else if(_playersCount < _currentPlayers){
                 _playersCount = _currentPlayers;
-                int token_id = PlayerPrefs.GetInt("player_id");
                 setMeshServerRpc(token_id);
                 setPositionServerRpc(transform.localPosition, token_id);
             }
