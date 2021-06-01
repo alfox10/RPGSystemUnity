@@ -13,8 +13,9 @@ Games handled:
 # Installation
 First of all you can look at my REST API project https://github.com/alfox10/RPGSystem for better understand my backend
 then you need to change the link in the `.cs` files that call REST API.
-After that you need your own Photon key, you can create a free account on their site, put that key in the PhotonAppSettings.asset file
-`    AppIdRealtime: <your_photon_id>`
+After that you need your own Photon key, you can create a free account on their site, put that key in the **PhotonAppSettings.asset** file
+
+`AppIdRealtime: <your_photon_id>`
 
 # Unity Plugins
 Here a screenshot of plugin used, you can install them from the Asset Manager inside Unity
