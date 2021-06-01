@@ -45,9 +45,12 @@ public class UIManager : NetworkBehaviour
     public float __INIT__SPEED__SCALE;
     public float __INIT__SMOOTHING;    
     public float __INIT__SMOOTH__DIVIDER;
+    public PGstats pgStats;
+
+
     //private
     private Button gm;
-    private PGstats pgStats;
+
     private float speed_scale;
     private float smoothing;
     private int idx;
@@ -139,7 +142,6 @@ public class UIManager : NetworkBehaviour
             speed_scale = __INIT__SPEED__SCALE;
             smoothing = __INIT__SMOOTHING;
             smoth_divider = __INIT__SMOOTH__DIVIDER;
-            //TODO test only, sostiture 5 con variabile
             Debug.Log("Init Player");
             initPG(player_id);
         }
@@ -148,6 +150,8 @@ public class UIManager : NetworkBehaviour
     public class PGid{
         public int id;
     }
+
+
 
     public class PGstats{
         //hp, max_hp, omens, name
@@ -180,25 +184,34 @@ public class UIManager : NetworkBehaviour
     }
 
     void HPChanger(int change){
+        string message="";
         if(change == 0){
             if(pgStats.hp < pgStats.max_hp){
                 pgStats.hp +=1;
+                message = "earned 1 HP";
             }
         }else if(change == 1){
             if(pgStats.hp > 0){
                 pgStats.hp -=1;
+                message = "lost 1 HP";
+            } else {
+                message = "IS DEAD";
             }
         }else if(change == 2){
             pgStats.omens +=1;
+            message = "earned 1 "+mana_type;
         }else if(change == 3){
             if(pgStats.omens > 0){
                 pgStats.omens -=1;
+                message = "lost 1 "+mana_type;
             }
         }else{
             Debug.Log("Error cannot recognize button HP");
+            message = "error";
         }
-
+        message = "\n"+pgStats.name+" "+message;
         changeGuiStatInfo(pgStats);
+        writeNewInfoOnChatServerRpc(message);
 
     }
 
@@ -345,5 +358,18 @@ public class UIManager : NetworkBehaviour
         }
 
 
+    }
+
+
+    [ServerRpc]
+    void writeNewInfoOnChatServerRpc(string message){
+        writeNewInfoOnChatClientRpc(message);
+    }
+
+
+    [ClientRpc]
+    void writeNewInfoOnChatClientRpc(string message){
+        chat_text = GameObject.FindGameObjectWithTag("chat").GetComponent<Text>();
+        chat_text.text = chat_text.text + message;
     }
 }

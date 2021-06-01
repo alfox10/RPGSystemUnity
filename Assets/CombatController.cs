@@ -4,49 +4,76 @@ using  UnityEngine.UI;
 using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
+using UnityEngine.Networking;
+using MLAPI.NetworkVariable;
 public class CombatController : NetworkBehaviour
 {
 
     public GameObject combat_canvas;
     public GameObject _rowTemplate;
+
+    public string pg_name;
     private int _currentObjInCanvas;
 
 
+
+
     void Start(){
+        if(IsLocalPlayer){
         _currentObjInCanvas = 0;
         combat_canvas = GameObject.FindGameObjectWithTag("combat_canvas");
         _rowTemplate = GameObject.FindGameObjectWithTag("_imageTemplate");
+        }
     }
+
     void Update()
     {
+        if(IsLocalPlayer){
+            if(pg_name == "" && transform.gameObject.tag == "Player"){
+                if(transform.parent.GetChild(1).gameObject.GetComponent<UIManager>().pgStats != null)
+                    setNameForPlayerServerRpc(transform.parent.GetChild(1).gameObject.GetComponent<UIManager>().pgStats.name);
+            }
+        }
         if(IsHost){
             if(_currentObjInCanvas != UnitSelection.Instance.unitSelected.Count){
                 _currentObjInCanvas = UnitSelection.Instance.unitSelected.Count;
                 destroyUnitSelectionServerRpc();
                 foreach(var incombat in UnitSelection.Instance.unitSelected){
-                    string name = incombat.name;
-                    if(incombat.transform.parent.GetChild(1).transform.gameObject.GetComponent<UIManager>() != null){
-                        name = incombat.transform.parent.GetChild(1).transform.gameObject.GetComponent<UIManager>().getPlayerPrimaryInfo().name;
+                    string cur_p_name = incombat.name;
+                    Debug.Log("TAG : "+incombat.tag);
+                    if(incombat.tag == "Player"){
+                        cur_p_name = incombat.transform.parent.GetChild(5).gameObject.GetComponent<CombatController>().pg_name;
                     }
-                    Debug.Log("PLAYER : "+incombat.name);
-                    drawUnitSelectionServerRpc(name);
+                    drawUnitSelectionServerRpc(cur_p_name);
                 }
             }
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    void drawUnitSelectionServerRpc(string name){
-        drawUnitSelectionClientRpc(name);
+    void setNameForPlayerServerRpc(string pname){
+        setNameForPlayerClientRpc(pname);
     }
 
     [ClientRpc]
-    void drawUnitSelectionClientRpc(string name){
+    void setNameForPlayerClientRpc(string pname){
+        Debug.Log("Comunicating name ::PNAME-CLIENT");
+        gameObject.transform.parent.GetChild(5).gameObject.GetComponent<CombatController>().pg_name = pname;
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    void drawUnitSelectionServerRpc(string incombat){
+        drawUnitSelectionClientRpc(incombat);
+    }
+
+    [ClientRpc]
+    void drawUnitSelectionClientRpc(string incombat){
         combat_canvas = GameObject.FindGameObjectWithTag("combat_canvas");
         _rowTemplate = GameObject.FindGameObjectWithTag("_imageTemplate");
         GameObject g;
         g = Instantiate(_rowTemplate, combat_canvas.transform);
-        g.transform.GetChild(0).GetComponent<Text>().text = name;
+        g.transform.GetChild(0).GetComponent<Text>().text = incombat;
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -60,5 +87,6 @@ public class CombatController : NetworkBehaviour
         for(int i = 0; i < combat_canvas.transform.childCount; i++){
             Destroy(combat_canvas.transform.GetChild(i).gameObject);
         }
+    
     }
 }
