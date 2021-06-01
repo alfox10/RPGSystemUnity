@@ -74,6 +74,7 @@ public class CombatController : NetworkBehaviour
         GameObject g;
         g = Instantiate(_rowTemplate, combat_canvas.transform);
         g.transform.GetChild(0).GetComponent<Text>().text = incombat;
+        g.GetComponent<Image>().color = new Color(Random.Range(0f,1f),Random.Range(0f,1f),Random.Range(0f,1f));
     }
 
     [ServerRpc(RequireOwnership = false)]
