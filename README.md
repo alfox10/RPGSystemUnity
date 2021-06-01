@@ -5,3 +5,6 @@ Games handled:
 * Mork Borg
 * Drizzit
 * Vulcania
+* Dnd 5 edition
+* 7th sea
+* The Last Torch
