@@ -7,7 +7,7 @@ using MLAPI.Prototyping;
 
 public class PlayerHandler : NetworkBehaviour
 {
-
+    public float gravity = -9.8f;
     public float moveSpeed = 2f;
     private float last_x,last_z;
     private float waterSpeed = 1f;
@@ -15,6 +15,8 @@ public class PlayerHandler : NetworkBehaviour
     private int _playersCount;
 
     private int token_id;
+    private bool isGrounded=true;
+
 
 
    
@@ -34,8 +36,14 @@ public class PlayerHandler : NetworkBehaviour
     
     void Update (){
         if(IsLocalPlayer){
+            if(!isGrounded){
+                float posy = transform.position.y - (gravity*Time.deltaTime);
+                transform.position = new Vector3(transform.position.x,posy,transform.position.z);
+                Debug.Log("POSY : "+posy);
+            }else {
             transform.Translate(Vector3.forward * Time.deltaTime * Input.GetAxis("Vertical")* currentSpeed);
             transform.Translate(Vector3.right * Time.deltaTime * Input.GetAxis("Horizontal")* currentSpeed);
+            }
         }
     }
 
@@ -55,6 +63,7 @@ public class PlayerHandler : NetworkBehaviour
 
     private void TriggerHandler(Collider other){
         if(IsLocalPlayer){
+            isGrounded = true;
             if(other.tag == "Player")
                 return;
             bool isInCollisionArray = other.tag == "collider_obj";
@@ -86,6 +95,10 @@ public class PlayerHandler : NetworkBehaviour
         if(IsLocalPlayer){
             TriggerHandler(other);
         }
+    }
+    private void OnTriggerExit(Collider other) {
+        transform.position = new Vector3(transform.position.x,transform.position.y * Time.deltaTime * gravity,transform.position.z);
+        isGrounded = false;
     }
 
 //(RequireOwnership = false)

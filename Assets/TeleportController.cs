@@ -13,6 +13,12 @@ public class TeleportController : NetworkBehaviour
     [Header("Button")]
     public GameObject _template;
 
+    [Header("Teleport Variables")]
+    public float minX = -1.5f;
+    public float maxX = 1.5f;
+    public float minY = -1.5f;
+    public float maxY = 1.5f;
+
     private GameObject[] spawn_points;
     // Start is called before the first frame update
     void Start()
@@ -41,7 +47,7 @@ public class TeleportController : NetworkBehaviour
     void TeleportAllPlayersClientRpc(Vector3 spawn){
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach(GameObject pg in players){
-            Vector3 offset = new Vector3(Random.Range(-3,3),0,Random.Range(-3,3));
+            Vector3 offset = new Vector3(Random.Range(minX,maxX),0,Random.Range(minY,maxY));
             pg.transform.position = spawn+offset;
         }
     }
