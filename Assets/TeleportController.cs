@@ -26,13 +26,11 @@ public class TeleportController : NetworkBehaviour
         Debug.Log("Looking for Spawn Points");
         spawn_points = GameObject.FindGameObjectsWithTag("spawn_point");
         GameObject g;
-        int i = 0;
         foreach(GameObject spawn in spawn_points){
             g = Instantiate(_template, transform);
             g.transform.GetChild(0).GetComponent<Text>().text = spawn.name;
             Button b = g.GetComponent<Button>();
             b.onClick.AddListener(delegate{addTeleportCoordinates(spawn);});
-            i +=1;
         }
         Destroy(_template);
 
@@ -52,5 +50,4 @@ public class TeleportController : NetworkBehaviour
         }
     }
 
-    // Update is called once per frame
 }
