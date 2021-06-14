@@ -14,10 +14,16 @@ public class UIManager : NetworkBehaviour
     public GameObject dice_canvas;
     public GameObject inventory_canvas;
     public GameObject gm_canvas;
+    public GameObject combat_canvas;
+
+    public Button quit_game;
+    public Button open_close_combat;
     public GameObject roll_button_obj;
     public GameObject inventory_button_obj;
-    public GameObject close_button_obj;
-    public GameObject open_button_obj;
+
+    public Button inventory_close_button;
+   // public GameObject close_button_obj;
+    public GameObject open_roll_button;
 
     [Header("Dice Buttons")]
     public Button d20;
@@ -26,11 +32,13 @@ public class UIManager : NetworkBehaviour
     public Button d8;
     public Button d10;
     public Button d12;
+
+    public GameObject[] dice_selection;
     public GameObject diceGameCtl;
     private DiceGameController dgc;
 
     [Header("GUI")]
-    public Text name_gui;
+    //public Text name_gui;
     public Text hp_gui;
     public Text omens_gui;
     public GameObject gm_obj;
@@ -38,6 +46,8 @@ public class UIManager : NetworkBehaviour
     public Button remove_hp;
     public Button add_omens;
     public Button remove_omens;
+    public Image hp_primary_color;
+    public Image mana_primary_color;
 
     [Header("Movement Dice")]
     public Text chat_text;
@@ -57,7 +67,7 @@ public class UIManager : NetworkBehaviour
     private Image im;
     private int player_id;
     private Button roll_button;
-    private Button close_button;
+    //private Button close_button;
     private Button open_button;
     private Button open_close_inventory;
     private float smoth_divider;
@@ -116,6 +126,9 @@ public class UIManager : NetworkBehaviour
             setInitialDice();
             roll_button = roll_button_obj.GetComponent<Button>();
             roll_button.onClick.AddListener(rollOnButtonClick);
+            quit_game.onClick.AddListener(doExitGame);
+            open_close_combat.onClick.AddListener(openCloseCombat);
+            inventory_close_button.onClick.AddListener(closeInvMenu);
             if(IsHost){
                 gm = gm_obj.GetComponent<Button>();
                 gm.onClick.AddListener(openCloseGMCommands);
@@ -126,10 +139,10 @@ public class UIManager : NetworkBehaviour
                     _oGM.transform.gameObject.SetActive(false);
                 }
             }
-            close_button = close_button_obj.GetComponent<Button>();
-            close_button.onClick.AddListener(closeRoll);
-            open_button = open_button_obj.GetComponent<Button>();
-            open_button.onClick.AddListener(openRoll);
+           // close_button = close_button_obj.GetComponent<Button>();
+           // close_button.onClick.AddListener(closeRoll);
+            open_button = open_roll_button.GetComponent<Button>();
+            open_button.onClick.AddListener(openCloseRollTable);
             open_close_inventory = inventory_button_obj.GetComponent<Button>();
             open_close_inventory.onClick.AddListener(openCloseInventory);
             d20.onClick.AddListener(delegate{changeDice(0);});
@@ -158,7 +171,12 @@ public class UIManager : NetworkBehaviour
         public int hp;
         public int max_hp;
         public int omens;
+        public int max_omens;
         public string name;
+        public string pg_class;
+        public string class_type;
+        public int level;
+        public int exp;
     }
 
     void setManaType(){
@@ -166,6 +184,14 @@ public class UIManager : NetworkBehaviour
             mana_type = "Omens";
         else
             mana_type = "Mana";
+    }
+
+    void openCloseCombat(){
+        if(combat_canvas.activeSelf){
+            combat_canvas.SetActive(false);
+        }else{
+            combat_canvas.SetActive(true);
+        }
     }
 
     void openCloseGMCommands(){
@@ -198,8 +224,10 @@ public class UIManager : NetworkBehaviour
                 message = "IS DEAD";
             }
         }else if(change == 2){
-            pgStats.omens +=1;
-            message = "earned 1 "+mana_type;
+            if(pgStats.omens < pgStats.max_omens){
+                pgStats.omens +=1;
+                message = "earned 1 "+mana_type;
+            }
         }else if(change == 3){
             if(pgStats.omens > 0){
                 pgStats.omens -=1;
@@ -209,9 +237,11 @@ public class UIManager : NetworkBehaviour
             Debug.Log("Error cannot recognize button HP");
             message = "error";
         }
-        message = "\n"+pgStats.name+" "+message;
         changeGuiStatInfo(pgStats);
-        writeNewInfoOnChatServerRpc(message);
+        if(message != ""){
+            message = "\n"+pgStats.name+" "+message;
+            writeNewInfoOnChatServerRpc(message);
+        }
 
     }
 
@@ -238,21 +268,36 @@ public class UIManager : NetworkBehaviour
     }
 
     void changeGuiStatInfo(PGstats pgStats){
-        hp_gui.text = "HP: "+pgStats.hp+"/"+pgStats.max_hp;
-        omens_gui.text = mana_type+" : "+pgStats.omens;
-        name_gui.text = pgStats.name;
+        hp_gui.text = pgStats.hp+"/"+pgStats.max_hp;
+        omens_gui.text = pgStats.omens+"/"+pgStats.max_omens;
+        if(pgStats.hp == 0){
+            hp_primary_color.fillAmount = 0;
+        }else{
+            hp_primary_color.fillAmount = ((float)pgStats.hp / (float)pgStats.max_hp);
+        }
+
+        if(pgStats.omens == 0){
+            mana_primary_color.fillAmount = 0;
+        }else{
+            mana_primary_color.fillAmount = ((float)pgStats.omens / (float)pgStats.max_omens);
+        }
     }
 
     void changeDice(int dice){
-        im.sprite = dgc.GetSprite(diceSwitchHandler[dice].initialSprite);
-        minDiceFace = diceSwitchHandler[dice].minRange;
-        maxDiceFace = diceSwitchHandler[dice].maxRange;
-        diceNameFormat = diceSwitchHandler[dice].diceName;
+        if(!isRolling){
+            im.sprite = dgc.GetSprite(diceSwitchHandler[dice].initialSprite);
+            minDiceFace = diceSwitchHandler[dice].minRange;
+            maxDiceFace = diceSwitchHandler[dice].maxRange;
+            diceNameFormat = diceSwitchHandler[dice].diceName;
+            foreach (var item in dice_selection)
+            {
+                item.SetActive(false);
+            }
+            dice_selection[dice].SetActive(true);
+        }
+
     }
 
-    void closeRoll(){
-        dice_canvas.SetActive(false);
-    }
 
     void openCloseInventory(){
         if(inventory_canvas.activeSelf){
@@ -262,8 +307,16 @@ public class UIManager : NetworkBehaviour
         }
     }
 
-    void openRoll(){
-        dice_canvas.SetActive(true);
+    void closeInvMenu(){
+        inventory_canvas.SetActive(false);
+    }
+
+    void openCloseRollTable(){
+        if(dice_canvas.activeSelf){
+            dice_canvas.SetActive(false);
+        }else{
+            dice_canvas.SetActive(true);
+        }
     }
 
     void rollOnButtonClick(){
@@ -282,6 +335,10 @@ public class UIManager : NetworkBehaviour
 
     }
 
+    void doExitGame() {
+        Application.Quit();
+    }
+
     void rollDice(){
         if(speed_scale > 0){
              dice.transform.localScale = Vector3.Lerp (dice.transform.localScale, Vector3.one* UnityEngine.Random.Range(0.1f,0.3f), speed_scale);
@@ -290,8 +347,8 @@ public class UIManager : NetworkBehaviour
         
         
         if(smoothing > 0){
-            float targetX = UnityEngine.Random.Range(-80f,80f);
-            float targetY = UnityEngine.Random.Range(-80f,80f);
+            float targetX = UnityEngine.Random.Range(-200f,200f);
+            float targetY = UnityEngine.Random.Range(-200f,200f);
             Vector3 vv = new Vector3(targetX, targetY, 0f);
             dice.transform.localPosition = Vector3.Lerp(dice.transform.localPosition, vv, smoothing/smoth_divider);
             dice.transform.Rotate( Vector3.forward* Time.deltaTime * 300 * smoothing);

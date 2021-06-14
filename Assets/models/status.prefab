@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 100792c8f5ba5d4468bc690c640e9243, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8765ed4438187bc43b93236229a4a5bc, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 8086427341920438765}
   - component: {fileID: 8918377315326488665}
   - component: {fileID: 7528008533064918208}
+  - component: {fileID: 1704051363730898753}
   m_Layer: 5
   m_Name: status
   m_TagString: Untagged
@@ -153,6 +154,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1704051363730898753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4200267109661904598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4648d2d7b2feb2c449632b93296fa970, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  status_name: 
 --- !u!1 &8449752402965088975
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,4 +320,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 5/5
+  m_Text: 5

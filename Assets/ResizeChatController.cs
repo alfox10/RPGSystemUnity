@@ -27,11 +27,11 @@ public class ResizeChatController : MonoBehaviour
         if(paneltransform.sizeDelta.y < 100){
             paneltransform.sizeDelta = new Vector2(paneltransform.sizeDelta.x,400);
             _buttoncurrentimage.sprite = min; 
-            _buttontransform.position = new Vector2(_buttontransform.position.x,300);
+           // _buttontransform.position = new Vector2(_buttontransform.position.x,433);
         } else {
-            paneltransform.sizeDelta = new Vector2(paneltransform.sizeDelta.x,60);
+            paneltransform.sizeDelta = new Vector2(paneltransform.sizeDelta.x,100);
             _buttoncurrentimage.sprite = max; 
-            _buttontransform.position = new Vector2(_buttontransform.position.x,70);
+           // _buttontransform.position = new Vector2(_buttontransform.position.x,93);
         }
     }
 

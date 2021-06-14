@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
@@ -7,6 +6,8 @@ using UnityEngine.Networking;
 
 public class InventoryManager : MonoBehaviour
 {
+
+    public GameObject[] inv_icons;
 
     private int player_id;
 
@@ -31,20 +32,37 @@ public class InventoryManager : MonoBehaviour
     }
     
     void formatInventory(ListItemFormat ifl){
-
-        GameObject item_template = transform.GetChild(0).gameObject;
-        GameObject g;
         foreach (ItemFormat item in ifl.itemFormatList)
         {
-            g = Instantiate(item_template, transform);
-            g.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = Resources.Load("item_icons/"+item.icon, typeof(Sprite)) as Sprite;
-            g.transform.GetComponent<TooltipTrigger>().content = item.effect;
-            g.transform.GetChild(1).GetComponent<Text>().text = item.description;
-            g.transform.GetChild(2).GetComponent<Text>().text = item.effect.Split(char.Parse(" "))[0]+" "+item.effect.Split(char.Parse(" "))[1]+"...";
-            g.transform.GetChild(3).GetComponent<Text>().text = "Qt: "+item.qt;
+            int idx = item.is_equipped;
+            switch (idx)
+            {
+                case 0:
+                    inv_icons[idx].GetComponent<Text>().text = item.qt.ToString();
+                    break;
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    inv_icons[idx].transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("item_icons/"+item.icon, typeof(Sprite)) as Sprite;
+                    inv_icons[idx].transform.GetChild(0).GetComponent<TooltipTrigger>().content = item.effect;
+                    inv_icons[idx].transform.GetChild(0).GetComponent<TooltipTrigger>().isUsed = true;
+                    inv_icons[idx].transform.GetChild(0).GetComponent<TooltipTrigger>().header = item.description;
+                    inv_icons[idx].transform.GetChild(0).GetComponent<TooltipTrigger>().image_content = item.icon;
+                    break;
+                default:
+                    inv_icons[idx].transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("item_icons/"+item.icon, typeof(Sprite)) as Sprite;
+                    inv_icons[idx].GetComponent<TooltipTrigger>().content = item.effect;
+                    inv_icons[idx].GetComponent<TooltipTrigger>().header = item.description;
+                    inv_icons[idx].GetComponent<TooltipTrigger>().isUsed = true;
+                    inv_icons[idx].GetComponent<TooltipTrigger>().image_content = item.icon;
+                    inv_icons[idx].transform.GetChild(1).gameObject.SetActive(true);
+                    inv_icons[idx].transform.GetChild(1).GetComponent<Text>().text = item.qt.ToString();
+                    break;
+            }
         }
-
-        Destroy(item_template);
     }
 
     void retrievePlayerInventory(int p_id){
@@ -88,6 +106,7 @@ public class InventoryManager : MonoBehaviour
         public string effect;
         public int qt;
         public string icon;
+        public int is_equipped;
     }
 
 

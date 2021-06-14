@@ -27,6 +27,7 @@ public class LoginController : MonoBehaviour
 
     private void connectAndLogin(string whoami){
         if(whoami == "host"){ 
+                Debug.Log("Starting HOST Session");
                 NetworkManager.Singleton.StartHost();
                 foreach ( GameObject go in _objToActivateHostOnly){
                         go.SetActive(true); 
@@ -40,6 +41,7 @@ public class LoginController : MonoBehaviour
 
 
         } else {
+                Debug.Log("Starting CLIENT Session");
                 NetworkManager.Singleton.StartClient();
                 foreach ( GameObject go in _objToActivateAll){
                         go.SetActive(true); 

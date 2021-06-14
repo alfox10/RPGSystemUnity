@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TooltipSystem : MonoBehaviour
@@ -10,9 +8,11 @@ public class TooltipSystem : MonoBehaviour
         current = this;
     }
 
-    public static void Show(string content){
-        current.tooltip.SetText(content);
-        current.tooltip.gameObject.SetActive(true);
+    public static void Show(string content, string image_content, string header, bool isUsed){
+        if(isUsed){
+            current.tooltip.SetText(content, image_content, header);
+            current.tooltip.gameObject.SetActive(true);
+        }
     }
     public static void Hide(){
         current.tooltip.gameObject.SetActive(false);
