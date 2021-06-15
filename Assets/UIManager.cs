@@ -249,7 +249,7 @@ public class UIManager : NetworkBehaviour
         PGid jsonbody = new PGid();
         jsonbody.id = p_id;
         string json = JsonUtility.ToJson(jsonbody);
-        var uwr = new UnityWebRequest("https://rpgsystem.alfox10.repl.co/api/v1/stats", "POST");
+        UnityWebRequest uwr = new UnityWebRequest("https://rpgsystem.alfox10.repl.co/api/v1/stats", "POST");
         byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
         uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
         uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
@@ -264,6 +264,11 @@ public class UIManager : NetworkBehaviour
             pgStats = new PGstats();
             pgStats = JsonUtility.FromJson<PGstats>(uwr.downloadHandler.text);
             changeGuiStatInfo(pgStats);
+        }
+        if (uwr != null)
+        {
+            uwr.Dispose();
+            uwr = null;
         }
     }
 

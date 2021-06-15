@@ -13,77 +13,79 @@ public class GMBattleController : NetworkBehaviour
     public Button clear_combat;
     public Button new_turn;
     GameObject[] players;
-    Dictionary<string,GameObject> inCombatDic = new Dictionary<string, GameObject>();
-    int total_fighter=0;
-    int current_fighter_turn=0;
+    int total_fighter = 0;
+    int current_fighter_turn = 0;
+    Dictionary<int, string> turn_to_name = new Dictionary<int, string>();
     // Start is called before the first frame update
     void Start()
     {
-        if(IsLocalPlayer){
+        if (IsLocalPlayer)
+        {
             retrievePlayers();
             put_combat_button.onClick.AddListener(addFighterInCombat);
             clear_combat.onClick.AddListener(clearCombat);
             new_turn.onClick.AddListener(advanceTurn);
-            
+
         }
     }
 
-    public void retrievePlayers(){
+    public void retrievePlayers()
+    {
         players = GameObject.FindGameObjectsWithTag("Player");
         __playersSelection.ClearOptions();
         List<string> options = new List<string>();
         foreach (var item in players)
         {
             options.Add(item.GetComponent<CombatController>().pg_name);
-            addFighterToDict(item.GetComponent<CombatController>().pg_name, item);
         }
         __playersSelection.AddOptions(options);
     }
 
-    void addFighterInCombat(){
+    void addFighterInCombat()
+    {
         string fighter = __playersSelection.options[__playersSelection.value].text;
-        total_fighter +=1;
+        turn_to_name.Add(total_fighter, fighter);
+        total_fighter += 1;
         instanciateFighterServerRpc(fighter);
     }
 
-    void advanceTurn(){
-        if(total_fighter > 1){
-            if(current_fighter_turn >= total_fighter){
+    void advanceTurn()
+    {
+        if (total_fighter > 1)
+        {
+            if (current_fighter_turn >= total_fighter)
+            {
                 current_fighter_turn = 0;
             }
-            advanceTurnServerRpc(current_fighter_turn);
-            current_fighter_turn +=1;
+            advanceTurnServerRpc(current_fighter_turn, turn_to_name[current_fighter_turn]);
+            current_fighter_turn += 1;
         }
-        
+
     }
 
-    void addFighterToDict(string fighter, GameObject fighter_go){
-        Debug.Log("ADDING IN DICT : "+fighter);
-        GameObject gg;
-        bool iskeyin = inCombatDic.TryGetValue("fighter", out gg);
-        if(!iskeyin)
-            inCombatDic.Add(fighter, fighter_go);
-    }
-    
-    void clearCombat(){
-        inCombatDic.Clear();
+    void clearCombat()
+    {
         total_fighter = 0;
-        current_fighter_turn=0;
+        current_fighter_turn = 0;
+        turn_to_name.Clear();
         clearCombatServerRpc();
     }
 
     [ServerRpc]
-    void instanciateFighterServerRpc(string fighter_name){
+    void instanciateFighterServerRpc(string fighter_name)
+    {
         instanciateFighterClientRpc(fighter_name);
     }
 
     [ClientRpc]
-    void instanciateFighterClientRpc(string fighter_name){
+    void instanciateFighterClientRpc(string fighter_name)
+    {
         GameObject g;
         foreach (var pg in GameObject.FindGameObjectsWithTag("Player"))
         {
-            if(pg.transform.parent.GetChild(2).gameObject.activeSelf){
-                g = Instantiate(_text_prefab_template,pg.transform.parent.GetChild(2).GetChild(2).transform);
+            if (pg.transform.parent.GetChild(2).gameObject.activeSelf)
+            {
+                g = Instantiate(_text_prefab_template, pg.transform.parent.GetChild(2).GetChild(2).transform);
                 g.transform.GetChild(0).GetChild(0).GetComponent<Text>().text = fighter_name;
             }
         }
@@ -92,37 +94,58 @@ public class GMBattleController : NetworkBehaviour
 
 
     [ServerRpc]
-    void clearCombatServerRpc(){
+    void clearCombatServerRpc()
+    {
         clearCombatClientRpc();
     }
 
     [ClientRpc]
-    void clearCombatClientRpc(){
-        foreach (var pg in GameObject.FindGameObjectsWithTag("Player")){
-            if(pg.transform.parent.GetChild(2).gameObject.activeSelf){
+    void clearCombatClientRpc()
+    {
+        foreach (var pg in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            if (pg.transform.parent.GetChild(2).gameObject.activeSelf)
+            {
                 GameObject mainCombatPanel = pg.transform.parent.GetChild(2).GetChild(2).gameObject;
-                for(int i = 0; i < mainCombatPanel.transform.childCount;i++){
+                for (int i = 0; i < mainCombatPanel.transform.childCount; i++)
+                {
                     Destroy(mainCombatPanel.transform.GetChild(i).gameObject);
                 }
             }
         }
     }
 
-    [ServerRpc]
-    void advanceTurnServerRpc(int current_fighter_turn){
-        advanceTurnClientRpc(current_fighter_turn);
+    [ServerRpc(RequireOwnership = false)] 
+    void advanceTurnServerRpc(int current_fighter_turn, string turn_name)
+    {
+        advanceTurnClientRpc(current_fighter_turn, turn_name);
     }
 
     [ClientRpc]
-    void advanceTurnClientRpc(int current_fighter_turn){
-        foreach (var pg in GameObject.FindGameObjectsWithTag("Player")){
-            if(pg.transform.parent.GetChild(2).gameObject.activeSelf){
+    void advanceTurnClientRpc(int current_fighter_turn, string turn_name)
+    {
+        GameObject[] pg_in_scene = GameObject.FindGameObjectsWithTag("Player");
+        foreach (var pg in pg_in_scene)
+        {
+            string ccname = pg.transform.GetComponent<CombatController>().pg_name;
+            Debug.Log("activating selection for "+turn_name+" current "+ccname);
+            if (ccname == turn_name)
+            {
+                pg.transform.GetChild(0).gameObject.SetActive(true);
+            }else{
+                pg.transform.GetChild(0).gameObject.SetActive(false);
+            }
+            if (pg.transform.parent.GetChild(2).gameObject.activeSelf)
+            {
                 GameObject mainCombatPanel = pg.transform.parent.GetChild(2).GetChild(2).gameObject;
-                for(int i = 0; i < mainCombatPanel.transform.childCount;i++){
+                for (int i = 0; i < mainCombatPanel.transform.childCount; i++)
+                {
                     mainCombatPanel.transform.GetChild(i).GetChild(1).gameObject.SetActive(false);
                 }
                 mainCombatPanel.transform.GetChild(current_fighter_turn).GetChild(1).gameObject.SetActive(true);
+
+
             }
-        }   
+        }
     }
 }

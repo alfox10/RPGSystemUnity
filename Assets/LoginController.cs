@@ -87,7 +87,7 @@ public class LoginController : MonoBehaviour
         jsonbody.username = user.text;
         jsonbody.password = pass.text;
         string json = JsonUtility.ToJson(jsonbody);
-        var uwr = new UnityWebRequest("https://rpgsystem.alfox10.repl.co/api/v1/credentials", "POST");
+        UnityWebRequest uwr = new UnityWebRequest("https://rpgsystem.alfox10.repl.co/api/v1/credentials", "POST");
         byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
         uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
         uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
@@ -108,6 +108,11 @@ public class LoginController : MonoBehaviour
                 Debug.Log("not valid user and/or pass");
                 error_handler.text = "not valid user and/or pass";
             }
+        }
+        if (uwr != null)
+        {
+            uwr.Dispose();
+            uwr = null;
         }
        
     }

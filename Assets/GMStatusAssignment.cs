@@ -41,7 +41,7 @@ public class GMStatusAssignment : NetworkBehaviour
         if(turns.text == ""){
             Debug.Log("No Turns Set");
         }else{
-            addStatusToPlayerServerRpc(p_target.transform.parent.GetChild(5).gameObject.GetComponent<CombatController>().pg_name, __ddStatus.value, turns.text);
+            addStatusToPlayerServerRpc(p_target.transform.parent.GetChild(5).gameObject.GetComponent<CombatController>().pg_name,__ddStatus.options[__ddStatus.value].text, turns.text);
         }
     }
 
@@ -75,22 +75,22 @@ public class GMStatusAssignment : NetworkBehaviour
     }
 
     [ServerRpc]
-    void addStatusToPlayerServerRpc(string p_name, int icon, string turncount){
+    void addStatusToPlayerServerRpc(string p_name, string icon, string turncount){
         Debug.Log("Adding Status to player ::SERVER");
         addStatusToPlayerClientRpc(p_name, icon,turncount);
     }
 
     [ClientRpc]
-    void addStatusToPlayerClientRpc(string p_name, int icon, string turncount){
+    void addStatusToPlayerClientRpc(string p_name, string icon, string turncount){
         GameObject[] ps = GameObject.FindGameObjectsWithTag("Player");
         foreach (var pg in ps)
         {
-            if(p_name == pg.transform.parent.GetChild(5).gameObject.GetComponent<CombatController>().pg_name){
+            if(p_name == pg.GetComponent<CombatController>().pg_name){
                 GameObject status_panel = pg.transform.parent.GetChild(2).GetChild(1).gameObject;
                 GameObject g;
                 g = Instantiate(_statusTemplate, status_panel.transform);
-                g.GetComponent<StatusNameController>().status_name = __ddStatus.options[icon].text;
-                g.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("status_icons/"+__ddStatus.options[icon].text, typeof(Sprite)) as Sprite;  
+                g.GetComponent<StatusNameController>().status_name = icon;
+                g.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load("status_icons/"+icon, typeof(Sprite)) as Sprite;  
                 g.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = turncount;
             }
         }

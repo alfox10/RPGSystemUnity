@@ -77,7 +77,7 @@ public class InventoryManager : MonoBehaviour
         PGid jsonbody = new PGid();
         jsonbody.id = p_id;
         string json = JsonUtility.ToJson(jsonbody);
-        var uwr = new UnityWebRequest("https://rpgsystem.alfox10.repl.co/api/v1/inventory", "POST");
+        UnityWebRequest uwr = new UnityWebRequest("https://rpgsystem.alfox10.repl.co/api/v1/inventory", "POST");
         byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
         uwr.uploadHandler = (UploadHandler)new UploadHandlerRaw(jsonToSend);
         uwr.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
@@ -92,6 +92,11 @@ public class InventoryManager : MonoBehaviour
             ListItemFormat ifl = new ListItemFormat();
             ifl = JsonUtility.FromJson<ListItemFormat>(uwr.downloadHandler.text);
             formatInventory(ifl);
+        }
+         if (uwr != null)
+        {
+            uwr.Dispose();
+            uwr = null;
         }
     }
     [Serializable]

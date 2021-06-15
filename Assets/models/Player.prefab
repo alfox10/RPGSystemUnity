@@ -3166,9 +3166,9 @@ GameObject:
   - component: {fileID: 352006186017399391}
   - component: {fileID: 352006186017399390}
   - component: {fileID: 352006186017399328}
-  - component: {fileID: 352006186017399329}
   - component: {fileID: 352006186017399330}
   - component: {fileID: 2503218248774729485}
+  - component: {fileID: 8495292946266810930}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -3256,23 +3256,6 @@ MonoBehaviour:
   target: {fileID: 352006185950244538}
   speed: 50
   offset: {x: 12, y: 12, z: 0}
---- !u!114 &352006186017399329
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 352006186017399388}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sharedProfile: {fileID: 11400000, guid: 5d9718a20b7e0ce478ec0ae3c97256c5, type: 2}
-  isGlobal: 1
-  blendDistance: 0
-  weight: 1
-  priority: 0
 --- !u!114 &352006186017399330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3288,7 +3271,7 @@ MonoBehaviour:
   volumeTrigger: {fileID: 352006186017399389}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 1536
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
   antialiasingMode: 2
@@ -3381,6 +3364,23 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8495292946266810930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 352006186017399388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 11400000, guid: 5d9718a20b7e0ce478ec0ae3c97256c5, type: 2}
+  isGlobal: 0
+  blendDistance: 0
+  weight: 1
+  priority: 0
 --- !u!1 &352006186124398777
 GameObject:
   m_ObjectHideFlags: 0
@@ -6781,8 +6781,8 @@ GameObject:
   - component: {fileID: 3620752991115679855}
   - component: {fileID: 7712859584629452254}
   - component: {fileID: 5315875154119266430}
-  - component: {fileID: 1194532096442510221}
-  m_Layer: 0
+  - component: {fileID: 7885578944434469453}
+  m_Layer: 9
   m_Name: selection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6797,7 +6797,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2185204255083354330}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -0.381, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 352006185950244538}
@@ -6853,20 +6853,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &1194532096442510221
-MeshCollider:
+--- !u!114 &7885578944434469453
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2185204255083354330}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83a3beef58287934684c83207020a64a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 50
 --- !u!1 &2203326985852905806
 GameObject:
   m_ObjectHideFlags: 0
