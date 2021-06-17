@@ -20,7 +20,21 @@ public class tooltip : MonoBehaviour
 
     private void Update(){
         Vector2 m_pos = Input.mousePosition;
-        Vector2 offset = new Vector2((transform.GetComponent<RectTransform>().sizeDelta.x),(transform.GetComponent<RectTransform>().sizeDelta.y/2));
-        transform.position = new Vector2(m_pos.x+offset.x,m_pos.y-offset.y);
+        //Vector2 offset = new Vector2((transform.GetComponent<RectTransform>().sizeDelta.x),(transform.GetComponent<RectTransform>().sizeDelta.y/2));
+        RectTransform thisRectTransform = GetComponent<RectTransform>();
+        Vector2 thisPivot = thisRectTransform.pivot;
+        if((Screen.width - m_pos.x) < thisRectTransform.sizeDelta.x){
+            thisPivot.x = 1f;
+        } else{
+             thisPivot.x = 0f;
+        }
+        if(m_pos.y < thisRectTransform.sizeDelta.y){
+            thisPivot.y = 0f;
+        } else{
+             thisPivot.y = 1f;
+        }
+        thisRectTransform.pivot = thisPivot;
+        transform.position = m_pos;
+        
     }
 }
