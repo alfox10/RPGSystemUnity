@@ -7,7 +7,8 @@ public class HPController : MonoBehaviour
 {
     public int MAX_HP;
     public Image im_sprite;
-    public Sprite dead_sprite;
+    //public Sprite dead_sprite;
+    public NPCRollController nPCRoll;
     private Text tx;
     private int current_hp;
     private bool isAlive;
@@ -40,7 +41,7 @@ public class HPController : MonoBehaviour
         if(current_hp == 0 && isAlive){
             Debug.Log("NPC Dead");
             isAlive = false;
-            im_sprite.sprite = dead_sprite;
+            nPCRoll.setNPCDead();
         }
     }
 

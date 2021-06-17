@@ -413,7 +413,11 @@ public class UIManager : NetworkBehaviour
                 } else {
                     diceGameCtl = GameObject.FindWithTag("DiceImageController");
                     dgc = diceGameCtl.GetComponent<DiceGameController>();
-                    Sprite s = dgc.GetSprite(d_face);
+                    Sprite s;
+                    if(d_face < 0)
+                        s = Resources.Load("status_icons/dead_pg", typeof(Sprite)) as Sprite; 
+                    else
+                        s = dgc.GetSprite(d_face);
                     npc_image.sprite = s;
                 }              
             }

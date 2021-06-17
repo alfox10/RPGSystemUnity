@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,24 +13,48 @@ public class GMBattleController : NetworkBehaviour
     public Button put_combat_button;
     public Button clear_combat;
     public Button new_turn;
+    public InputField rolled_value;
     GameObject[] players;
     int total_fighter = 0;
     int current_fighter_turn = 0;
-    Dictionary<int, string> turn_to_name = new Dictionary<int, string>();
+    int retrieved_fighters = 0;
+    IOrderedEnumerable<KeyValuePair<string,int>> sortedDict;
+    Dictionary<string,int> turn_to_name = new Dictionary<string,int>();
     // Start is called before the first frame update
     void Start()
     {
         if (IsLocalPlayer)
         {
-            retrievePlayers();
+            //retrievePlayers();
             put_combat_button.onClick.AddListener(addFighterInCombat);
             clear_combat.onClick.AddListener(clearCombat);
             new_turn.onClick.AddListener(advanceTurn);
+            retrieveSelectedCombatFighter();
 
         }
     }
 
-    public void retrievePlayers()
+    void Update() {
+        retrieveSelectedCombatFighter();
+    }
+
+    void retrieveSelectedCombatFighter(){
+        if(retrieved_fighters < UnitSelection.Instance.unitSelected.Count){
+            __playersSelection.ClearOptions();
+            List<string> options = new List<string>();
+            foreach (var sel in  UnitSelection.Instance.unitSelected)
+            {
+                if(sel.tag == "Player")
+                    options.Add(sel.GetComponent<CombatController>().pg_name);
+                else
+                    options.Add(sel.name);
+            }
+            retrieved_fighters = UnitSelection.Instance.unitSelected.Count;
+            __playersSelection.AddOptions(options);
+        }
+    }
+
+/*     public void retrievePlayers()
     {
         players = GameObject.FindGameObjectsWithTag("Player");
         __playersSelection.ClearOptions();
@@ -39,25 +64,43 @@ public class GMBattleController : NetworkBehaviour
             options.Add(item.GetComponent<CombatController>().pg_name);
         }
         __playersSelection.AddOptions(options);
-    }
+    } */
 
     void addFighterInCombat()
     {
         string fighter = __playersSelection.options[__playersSelection.value].text;
-        turn_to_name.Add(total_fighter, fighter);
+        if(rolled_value.text == ""){
+            Debug.Log("You must set rolled value field");
+            return;
+        }
+        int rolled_value_int;
+        int.TryParse(rolled_value.text, out rolled_value_int);
+        turn_to_name.Add(fighter,rolled_value_int);
         total_fighter += 1;
-        instanciateFighterServerRpc(fighter);
+        sortedDict = from entry in turn_to_name orderby entry.Value descending select entry;
+        clearCombatServerRpc();
+        foreach (var item in sortedDict)
+        {
+            Debug.Log("SORTED DICT : "+item.Value+ " "+item.Key);
+            instanciateFighterServerRpc(item.Value+" - "+item.Key);
+        }
+        
     }
 
     void advanceTurn()
     {
-        if (total_fighter > 1)
+        if (total_fighter > 1 && sortedDict != null)
         {
             if (current_fighter_turn >= total_fighter)
             {
                 current_fighter_turn = 0;
             }
-            advanceTurnServerRpc(current_fighter_turn, turn_to_name[current_fighter_turn]);
+            //foreach (var item in UnitSelection.Instance.unitSelected)
+            foreach (var item in sortedDict)
+            {
+                stopAllAnimServerRpc(item.Key);
+            }
+            advanceTurnServerRpc(current_fighter_turn, sortedDict.ElementAt(current_fighter_turn).Key);
             current_fighter_turn += 1;
         }
 
@@ -65,9 +108,24 @@ public class GMBattleController : NetworkBehaviour
 
     void clearCombat()
     {
+        foreach (var item in UnitSelection.Instance.unitSelected)
+        {
+            string curr_name_to_stop="";
+            if(item.tag=="Player"){
+                curr_name_to_stop = item.GetComponent<CombatController>().pg_name;
+            } else {
+                curr_name_to_stop = item.name;
+            }
+            stopAllAnimServerRpc(curr_name_to_stop);
+        }
+        UnitSelection.Instance.DeselectAll();
         total_fighter = 0;
+        retrieved_fighters = 0;
         current_fighter_turn = 0;
+        __playersSelection.ClearOptions();
         turn_to_name.Clear();
+        sortedDict = null;
+        
         clearCombatServerRpc();
     }
 
@@ -124,28 +182,71 @@ public class GMBattleController : NetworkBehaviour
     [ClientRpc]
     void advanceTurnClientRpc(int current_fighter_turn, string turn_name)
     {
-        GameObject[] pg_in_scene = GameObject.FindGameObjectsWithTag("Player");
-        foreach (var pg in pg_in_scene)
-        {
-            string ccname = pg.transform.GetComponent<CombatController>().pg_name;
-            Debug.Log("activating selection for "+turn_name+" current "+ccname);
-            if (ccname == turn_name)
+        GameObject fgt = null;
+
+        Debug.Log("Starting new Turn for "+turn_name);
+        if(GameObject.Find(turn_name) == null){
+            //Player
+            foreach (var pg in GameObject.FindGameObjectsWithTag("Player"))
             {
-                pg.transform.GetChild(0).gameObject.SetActive(true);
-            }else{
-                pg.transform.GetChild(0).gameObject.SetActive(false);
+                if(pg.GetComponent<CombatController>().pg_name == turn_name)
+                    fgt = pg;
             }
+
+        } else {
+            //enemy
+            fgt = GameObject.Find(turn_name);
+        }
+
+        if(fgt != null){
+          Debug.Log("Found valid fgt : "+ fgt.name);
+          fgt.transform.GetChild(0).gameObject.GetComponent<SelectionMeshMovementController>().isAnim = true;
+          foreach (var pg in GameObject.FindGameObjectsWithTag("Player"))
+          {
             if (pg.transform.parent.GetChild(2).gameObject.activeSelf)
-            {
-                GameObject mainCombatPanel = pg.transform.parent.GetChild(2).GetChild(2).gameObject;
-                for (int i = 0; i < mainCombatPanel.transform.childCount; i++)
                 {
-                    mainCombatPanel.transform.GetChild(i).GetChild(1).gameObject.SetActive(false);
+                    Debug.Log("advance GUI Combat");
+                    GameObject mainCombatPanel = pg.transform.parent.GetChild(2).GetChild(2).gameObject;
+                    for (int i = 0; i < mainCombatPanel.transform.childCount; i++)
+                    {
+                        mainCombatPanel.transform.GetChild(i).GetChild(1).gameObject.SetActive(false);
+                    }
+                    mainCombatPanel.transform.GetChild(current_fighter_turn).GetChild(1).gameObject.SetActive(true);
                 }
-                mainCombatPanel.transform.GetChild(current_fighter_turn).GetChild(1).gameObject.SetActive(true);
+          }
 
+        }else{
+            Debug.Log("nothing found ::: advanceTurnClientRpc");
+        }
+    }
 
+    [ServerRpc]
+    void stopAllAnimServerRpc(string name){
+        stopAllAnimClientRpc(name);
+    }
+
+    [ClientRpc]
+    void stopAllAnimClientRpc(string name){
+        GameObject fgt = null;
+
+        Debug.Log("Cleaning anim for "+name);
+        if(GameObject.Find(name) == null){
+            //Player
+            foreach (var pg in GameObject.FindGameObjectsWithTag("Player"))
+            {
+                if(pg.GetComponent<CombatController>().pg_name == name)
+                    fgt = pg;
             }
+
+        } else {
+            //enemy
+            fgt = GameObject.Find(name);
+        }
+
+        if(fgt != null){
+            fgt.transform.GetChild(0).gameObject.GetComponent<SelectionMeshMovementController>().isAnim = false;
+        }else{
+            Debug.Log("nothing found ::: stopAllAnimClientRpc");
         }
     }
 }

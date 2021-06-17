@@ -6,6 +6,7 @@ public class UnitClick : NetworkBehaviour
 
     private Camera cam;
     public LayerMask selectable;
+    public LayerMask gui;
     void Start()
     {
         if(IsHost){
@@ -27,10 +28,6 @@ public class UnitClick : NetworkBehaviour
                     }else {
                         Debug.Log(hit.collider.name);
                         UnitSelection.Instance.ClickSelect(hit.collider.gameObject);
-                    }
-                }else {
-                    if(!Input.GetKey(KeyCode.LeftShift)){
-                        UnitSelection.Instance.DeselectAll();
                     }
                 }
             }

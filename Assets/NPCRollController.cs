@@ -63,5 +63,9 @@ public class NPCRollController : MonoBehaviour
             isRolling = true;
     }
 
+    public void setNPCDead(){
+        ui.setCombatDieSpriteServerRpc(-1, npc_id);
+    }
+
 
 }
