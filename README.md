@@ -21,4 +21,4 @@ create and put a secret key in the **PhotonAppSettings.asset** file
 # Unity Plugins
 Here a screenshot of plugin used, you can install them from the Asset Manager inside Unity
 
-![image](https://user-images.githubusercontent.com/7597120/120323547-e29a6280-c2e5-11eb-8baf-f1977a46d9b9.png)
+![image](https://user-images.githubusercontent.com/7597120/123106993-69e87b00-d439-11eb-8e9b-2b5e9c4cdfe3.png)
