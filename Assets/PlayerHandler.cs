@@ -16,6 +16,8 @@ public class PlayerHandler : NetworkBehaviour
 
     private int token_id;
     private bool isGrounded=true;
+    private string pg_name="";
+    private int current_level_player_pos=1;
 
 
 
@@ -25,6 +27,7 @@ public class PlayerHandler : NetworkBehaviour
     void Start()
     {
         if(IsLocalPlayer){
+
             currentSpeed = moveSpeed;
             token_id = PlayerPrefs.GetInt("player_id");
             _playersCount = GameObject.FindGameObjectsWithTag("Player").Length;
@@ -49,6 +52,11 @@ public class PlayerHandler : NetworkBehaviour
 
     void FixedUpdate() {
         if(IsLocalPlayer){
+            if(pg_name == ""){
+                if(transform.GetComponent<CombatController>().pg_name != ""){
+                    pg_name = transform.GetComponent<CombatController>().pg_name;
+                }
+            }
             int _currentPlayers = GameObject.FindGameObjectsWithTag("Player").Length;
             if(_playersCount > _currentPlayers){
                 _playersCount = _currentPlayers;
@@ -61,7 +69,7 @@ public class PlayerHandler : NetworkBehaviour
         }
     }
 
-    private void TriggerHandler(Collider other){
+/*     private void TriggerHandler(Collider other){
         if(IsLocalPlayer){
             isGrounded = true;
             if(other.tag == "Player")
@@ -83,14 +91,51 @@ public class PlayerHandler : NetworkBehaviour
                 
             }
         }
-    }
-
+    } */
+ 
     private void OnTriggerEnter(Collider other){
         if(IsLocalPlayer){
-            TriggerHandler(other);
+            TriggerLevelVisibility(other);
         }
     }
 
+    void TriggerLevelVisibility(Collider other){
+        if(IsLocalPlayer && other.tag == "Trigger_levels"){
+            GameObject level;
+            if(other.GetComponent<FloorTriggerController>().level == null)
+                return;
+            level =  other.GetComponent<FloorTriggerController>().level;
+            if(level.activeSelf){
+                level.SetActive(false);
+                current_level_player_pos -=1;
+                manageEnemiesGuiOthersFloor(true, current_level_player_pos);
+                   
+            } else {
+                level.SetActive(true);
+                manageEnemiesGuiOthersFloor(false, current_level_player_pos);
+                current_level_player_pos +=1;
+               
+            }
+            comunicaSelfPositionToOthersServerRpc(current_level_player_pos,pg_name);
+        }
+    }
+
+
+    void manageEnemiesGuiOthersFloor(bool beActive, int prev_lvl){
+        GameObject p_l_g = GameObject.Find("level"+prev_lvl);
+        for (int i = 0; i < p_l_g.transform.childCount; i++)
+        {
+            if(p_l_g.transform.GetChild(i).tag == "enemy_container"){
+                for (int j = 1; j < p_l_g.transform.GetChild(i).transform.childCount; j++)
+                {
+                    p_l_g.transform.GetChild(i).transform.GetChild(j).gameObject.SetActive(beActive);
+                }
+            }
+        }
+
+    }
+
+/*
     private void OnTriggerStay(Collider other){
         if(IsLocalPlayer){
             TriggerHandler(other);
@@ -99,7 +144,7 @@ public class PlayerHandler : NetworkBehaviour
     private void OnTriggerExit(Collider other) {
         transform.position = new Vector3(transform.position.x,transform.position.y * Time.deltaTime * gravity,transform.position.z);
         isGrounded = false;
-    }
+    } */
 
 //(RequireOwnership = false)
     [ServerRpc]
@@ -123,5 +168,27 @@ public class PlayerHandler : NetworkBehaviour
         gameObject.GetComponent<NetworkTransform>().Teleport(pos, rot);
         
     }
+
+    [ServerRpc]
+    void comunicaSelfPositionToOthersServerRpc(int current_level_player_pos,string pg_name){
+        comunicaSelfPositionToOthersClientRpc(current_level_player_pos,pg_name);
+    }
+
+    [ClientRpc]
+    void comunicaSelfPositionToOthersClientRpc(int other_level_pos,string pg_name){
+        foreach (var item in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            if(item.GetComponent<CombatController>().pg_name == pg_name){
+                if(current_level_player_pos != other_level_pos){
+                    item.GetComponent<Renderer>().enabled = false;
+                    item.transform.GetChild(1).gameObject.SetActive(false);
+                } else {
+                    item.GetComponent<Renderer>().enabled = true;
+                    item.transform.GetChild(1).gameObject.SetActive(true);
+                }
+            }
+        }
+    }
+
 
 }
