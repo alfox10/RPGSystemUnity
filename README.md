@@ -2,12 +2,12 @@
 RPG System Unity is a simple game that help people to play together at some RPG Games, the goals of this project is to keep the spirit of a RPG, helping master and PG to play online.
 
 Games handled:
-* Mork Borg
-* Drizzit
-* Vulcania
-* Dnd 5 edition
-* 7th sea
-* The Last Torch
+* Mork Borg - 80% handled
+* Drizzit - 10% handled
+* Vulcania - 10% handled
+* Dnd 5 edition - 10% handled
+* 7th sea - 10% handled
+* The Last Torch - 10% handled
 
 
 # Installation
