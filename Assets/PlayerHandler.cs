@@ -43,7 +43,6 @@ public class PlayerHandler : NetworkBehaviour
             if(!isGrounded){
                 float posy = transform.position.y - (gravity*Time.deltaTime);
                 transform.position = new Vector3(transform.position.x,posy,transform.position.z);
-                Debug.Log("POSY : "+posy);
             }else {
                 float axixsMovement = Mathf.Abs(Input.GetAxis("Vertical")) + Mathf.Abs(Input.GetAxis("Horizontal"));
                 player_anim.SetFloat("Speed", axixsMovement);

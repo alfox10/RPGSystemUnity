@@ -14,13 +14,6 @@ public class UnitSelection : NetworkBehaviour
 
     void Awake()
     {
-        if(IsLocalPlayer)
-            Debug.Log("LOCAL P :::::");
-        if(IsHost)
-            Debug.Log("HOST ::::");
-
-        if(IsClient)
-            Debug.Log("CLIENT ::::");
 
         if (_instance == null)
         {

@@ -46,11 +46,9 @@ public class CameraController : NetworkBehaviour
               transform.position +=  new Vector3(0f,0f,1f) * Time.deltaTime * cameraMouseSpeed;
           }
           if (Input.mousePosition.y < deltaPos  && target_dist_x < target.position.x+maxXRange){
-            Debug.Log("plus");
               transform.position +=  new Vector3(1f,0f,0f) * Time.deltaTime * cameraMouseSpeed;
           }
           if (Input.mousePosition.y > (Screen.height - deltaPos) && target_dist_x > target.position.x){
-            Debug.Log("min : "+target_dist_x+" "+(target.position.x-maxXRange_UP));
               transform.position +=  new Vector3(-1f,0f,0f) * Time.deltaTime * cameraMouseSpeed;
           }
         }

@@ -260,7 +260,6 @@ public class UIManager : NetworkBehaviour
         if (uwr.result == UnityWebRequest.Result.ConnectionError){
             Debug.Log("Error While Sending: " + uwr.error);
         } else {
-            Debug.Log(uwr.downloadHandler.text);
             pgStats = new PGstats();
             pgStats = JsonUtility.FromJson<PGstats>(uwr.downloadHandler.text);
             changeGuiStatInfo(pgStats);

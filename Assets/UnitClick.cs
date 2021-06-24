@@ -26,7 +26,6 @@ public class UnitClick : NetworkBehaviour
                     if(Input.GetKey(KeyCode.LeftShift)){
                         UnitSelection.Instance.ShiftSelect(hit.collider.gameObject);
                     }else {
-                        Debug.Log(hit.collider.name);
                         UnitSelection.Instance.ClickSelect(hit.collider.gameObject);
                     }
                 }

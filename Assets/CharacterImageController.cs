@@ -10,7 +10,6 @@ public class CharacterImageController : NetworkBehaviour
     void Start()
     {
         if(IsLocalPlayer){
-            Debug.Log("init image inventory player"+PlayerPrefs.GetInt("player_id"));
             player_image.GetComponent<Image>().sprite = Resources.Load("tokens/"+PlayerPrefs.GetInt("player_id")+"_s", typeof(Sprite)) as Sprite; 
         }
     }

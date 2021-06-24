@@ -8,7 +8,6 @@ public class PlayerNetwokHandler : NetworkBehaviour
 
     void Start()
     {
-        Debug.Log("Clearing obj in common");
         if(!IsLocalPlayer){
             foreach(GameObject go in _gameObjectsToDisable){
                 go.transform.gameObject.SetActive(false);

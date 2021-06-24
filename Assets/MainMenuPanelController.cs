@@ -19,7 +19,6 @@ public class MainMenuPanelController : MonoBehaviour
     }
 
     void openPanel(int i){
-        Debug.Log("i VALUE : "+i);
         panels[i].SetActive(true);
         mainMenuPanel.SetActive(false);
     }

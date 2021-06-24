@@ -76,7 +76,6 @@ public class GMStatusAssignment : NetworkBehaviour
 
     [ServerRpc]
     void addStatusToPlayerServerRpc(string p_name, string icon, string turncount){
-        Debug.Log("Adding Status to player ::SERVER");
         addStatusToPlayerClientRpc(p_name, icon,turncount);
     }
 

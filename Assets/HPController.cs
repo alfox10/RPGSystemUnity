@@ -39,7 +39,6 @@ public class HPController : MonoBehaviour
         }
 
         if(current_hp == 0 && isAlive){
-            Debug.Log("NPC Dead");
             isAlive = false;
             nPCRoll.setNPCDead();
         }

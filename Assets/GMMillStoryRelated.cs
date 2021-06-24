@@ -21,7 +21,6 @@ public class GMMillStoryRelated : NetworkBehaviour
 
     void changePGSpeed(){
         if(newSpeedValueField.text == ""){
-            Debug.Log("Speed vuota");
             return;
         }
 

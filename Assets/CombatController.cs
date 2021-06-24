@@ -17,12 +17,10 @@ public class CombatController : NetworkBehaviour
         if(IsLocalPlayer){
             GameObject[] pgs = GameObject.FindGameObjectsWithTag("Player");
             if(current_pg_in_game < pgs.Length){
-                Debug.Log("init PG NAME ::");
                 foreach (var item in pgs)
                 {
                     if(item.transform.parent.GetChild(1).gameObject.GetComponent<UIManager>().pgStats != null){
-                        Debug.Log("not more null ::: "+item.transform.parent.GetChild(1).gameObject.GetComponent<UIManager>().pgStats.name);
-                        setNameForPlayerServerRpc(item.transform.parent.GetChild(1).gameObject.GetComponent<UIManager>().pgStats.name);
+                         setNameForPlayerServerRpc(item.transform.parent.GetChild(1).gameObject.GetComponent<UIManager>().pgStats.name);
                         current_pg_in_game = pgs.Length;
                     }
                 }
@@ -38,7 +36,6 @@ public class CombatController : NetworkBehaviour
 
     [ClientRpc]
     void setNameForPlayerClientRpc(string pname){
-        Debug.Log("NAME :: "+gameObject.transform.parent.GetChild(5).gameObject.name);
         gameObject.transform.parent.GetChild(5).gameObject.GetComponent<CombatController>().pg_name = pname;
     }
 }

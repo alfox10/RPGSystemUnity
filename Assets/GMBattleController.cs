@@ -81,7 +81,6 @@ public class GMBattleController : NetworkBehaviour
         clearCombatServerRpc();
         foreach (var item in sortedDict)
         {
-            Debug.Log("SORTED DICT : "+item.Value+ " "+item.Key);
             instanciateFighterServerRpc(item.Value+" - "+item.Key);
         }
         
@@ -199,13 +198,12 @@ public class GMBattleController : NetworkBehaviour
         }
 
         if(fgt != null){
-          Debug.Log("Found valid fgt : "+ fgt.name);
+
           fgt.transform.GetChild(0).gameObject.GetComponent<SelectionMeshMovementController>().isAnim = true;
           foreach (var pg in GameObject.FindGameObjectsWithTag("Player"))
           {
             if (pg.transform.parent.GetChild(2).gameObject.activeSelf)
                 {
-                    Debug.Log("advance GUI Combat");
                     GameObject mainCombatPanel = pg.transform.parent.GetChild(2).GetChild(2).gameObject;
                     for (int i = 0; i < mainCombatPanel.transform.childCount; i++)
                     {
@@ -228,8 +226,6 @@ public class GMBattleController : NetworkBehaviour
     [ClientRpc]
     void stopAllAnimClientRpc(string name){
         GameObject fgt = null;
-
-        Debug.Log("Cleaning anim for "+name);
         if(GameObject.Find(name) == null){
             //Player
             foreach (var pg in GameObject.FindGameObjectsWithTag("Player"))
