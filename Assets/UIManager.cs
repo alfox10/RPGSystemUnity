@@ -306,19 +306,24 @@ public class UIManager : NetworkBehaviour
     void openCloseInventory(){
         if(inventory_canvas.activeSelf){
             inventory_canvas.SetActive(false);
+            transform.parent.GetChild(6).gameObject.GetComponent<CameraController>().isGUI = false;
         }else{
             inventory_canvas.SetActive(true);
+            transform.parent.GetChild(6).gameObject.GetComponent<CameraController>().isGUI = true;
         }
     }
 
     void closeInvMenu(){
         inventory_canvas.SetActive(false);
+        transform.parent.GetChild(6).gameObject.GetComponent<CameraController>().isGUI = false;
     }
 
     void openCloseRollTable(){
         if(dice_canvas.activeSelf){
+            transform.parent.GetChild(6).gameObject.GetComponent<CameraController>().isGUI = false;
             dice_canvas.SetActive(false);
         }else{
+            transform.parent.GetChild(6).gameObject.GetComponent<CameraController>().isGUI = true;
             dice_canvas.SetActive(true);
         }
     }
@@ -334,6 +339,7 @@ public class UIManager : NetworkBehaviour
             isRolling = true;
             
         }else if(isRolling){
+            
             rollDice();
         }
 

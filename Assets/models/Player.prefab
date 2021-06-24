@@ -3357,6 +3357,8 @@ MonoBehaviour:
   target: {fileID: 352006185950244538}
   maxZRange: 8
   maxXRange: 20
+  maxXRange_UP: 8
+  isTeleporting: 0
   deltaPos: 10
   speed: 50
   cameraMouseSpeed: 10
@@ -18527,7 +18529,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1279715709557342610}
   m_Layer: 0
-  m_Name: triggers
+  m_Name: GMEnemyStaticIdController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

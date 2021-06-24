@@ -8,6 +8,7 @@ public class CameraController : NetworkBehaviour
     public float maxXRange=30f;
     public float maxXRange_UP=8f;
     public bool isTeleporting=false;
+    public bool isGUI=false;
     public float deltaPos=10f;
     public float speed= 50f;
     public float cameraMouseSpeed=10f;
@@ -21,6 +22,9 @@ public class CameraController : NetworkBehaviour
             return;
         }
       if(IsLocalPlayer){
+        if(isGUI)
+          return;
+          
         if(isTeleporting){
           transform.position = target.position+offset;
           isTeleporting = false;
