@@ -1,32 +1,3 @@
-Skip to content
-Search or jump to…
-
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@alfox10 
-github
-/
-gitignore
-3.2k
-120k66.3k
-Code
-Pull requests
-280
-Actions
-Security
-Insights
-gitignore/Unity.gitignore
-@claw88
-claw88 Add *.aab (#3414)
-Latest commit 18aa6d8 on 19 May 2020
- History
- 40 contributors
-@mviranyi@theDrake@Tandoori@shana@qCring@LucasSteer@Frozenfire92@FritzsHero@ahmyi@FutureClemens@shiftkey@JasperCiti
-71 lines (58 sloc)  1.3 KB
-  
 # This .gitignore file should be placed at the root of your Unity project directory
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
