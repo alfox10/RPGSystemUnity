@@ -8,11 +8,27 @@ using MLAPI.Messaging;
 public class GMMillStoryRelated : NetworkBehaviour
 {
     public Button showBasementButton;
+    public Button updateSpeedButton;
+    public InputField newSpeedValueField;
 
 
     void Start() {
-        if(IsHost)
+        if(IsHost){
             showBasementButton.onClick.AddListener(showBasement);
+            updateSpeedButton.onClick.AddListener(changePGSpeed);
+        }
+    }
+
+    void changePGSpeed(){
+        if(newSpeedValueField.text == ""){
+            Debug.Log("Speed vuota");
+            return;
+        }
+
+        int speed;
+        int.TryParse(newSpeedValueField.text, out speed);
+        changeSpeedServerRpc(speed);
+
     }
 
     void showBasement(){
@@ -28,5 +44,17 @@ public class GMMillStoryRelated : NetworkBehaviour
     void showBasementClientRpc(){
        MillStoryEventController msec = GameObject.FindGameObjectWithTag("story_event_controller").GetComponent<MillStoryEventController>();
        msec.showBasement();
+    }
+
+    [ServerRpc]
+    void changeSpeedServerRpc(int speed){
+        changeSpeedClientRpc(speed);
+    }
+
+    [ClientRpc]
+    void changeSpeedClientRpc(int speed){
+        Debug.Log(gameObject.name);
+        Debug.Log(gameObject.transform.parent.name);
+         //.parent.GetChild(5).GetComponent<PlayerHandler>().moveSpeed = speed;
     }
 }
