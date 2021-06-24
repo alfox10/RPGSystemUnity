@@ -47,6 +47,7 @@ public class TeleportController : NetworkBehaviour
         foreach(GameObject pg in players){
             Vector3 offset = new Vector3(Random.Range(minX,maxX),0,Random.Range(minY,maxY));
             pg.transform.position = spawn+offset;
+            pg.transform.parent.GetChild(6).gameObject.GetComponent<CameraController>().isTeleporting =true;
         }
     }
 

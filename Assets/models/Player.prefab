@@ -3355,7 +3355,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 352006185950244538}
+  maxZRange: 8
+  maxXRange: 20
+  deltaPos: 10
   speed: 50
+  cameraMouseSpeed: 10
   offset: {x: 12, y: 12, z: 0}
 --- !u!114 &352006186017399330
 MonoBehaviour:
