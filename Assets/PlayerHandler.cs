@@ -7,6 +7,7 @@ using MLAPI.Prototyping;
 
 public class PlayerHandler : NetworkBehaviour
 {
+    public Animator player_anim;
     public float gravity = -9.8f;
     public float moveSpeed = 2f;
     private float last_x,last_z;
@@ -44,8 +45,10 @@ public class PlayerHandler : NetworkBehaviour
                 transform.position = new Vector3(transform.position.x,posy,transform.position.z);
                 Debug.Log("POSY : "+posy);
             }else {
-            transform.Translate(Vector3.forward * Time.deltaTime * Input.GetAxis("Vertical")* currentSpeed);
-            transform.Translate(Vector3.right * Time.deltaTime * Input.GetAxis("Horizontal")* currentSpeed);
+                float axixsMovement = Mathf.Abs(Input.GetAxis("Vertical")) + Mathf.Abs(Input.GetAxis("Horizontal"));
+                player_anim.SetFloat("Speed", axixsMovement);
+                transform.Translate(Vector3.forward * Time.deltaTime * Input.GetAxis("Vertical")* currentSpeed);
+                transform.Translate(Vector3.right * Time.deltaTime * Input.GetAxis("Horizontal")* currentSpeed);
             }
         }
     }
@@ -154,7 +157,7 @@ public class PlayerHandler : NetworkBehaviour
 
     [ClientRpc]
     void setMeshClientRpc(int t_id){
-        gameObject.GetComponent<Renderer>().material = Resources.Load("tokens/"+t_id, typeof(Material)) as Material; 
+        gameObject.transform.GetChild(2).GetComponent<Renderer>().material = Resources.Load("tokens/"+t_id, typeof(Material)) as Material; 
     }
 
 
@@ -180,10 +183,10 @@ public class PlayerHandler : NetworkBehaviour
         {
             if(item.GetComponent<CombatController>().pg_name == pg_name){
                 if(current_level_player_pos != other_level_pos){
-                    item.GetComponent<Renderer>().enabled = false;
+                    item.transform.GetChild(2).GetComponent<Renderer>().enabled = false;
                     item.transform.GetChild(1).gameObject.SetActive(false);
                 } else {
-                    item.GetComponent<Renderer>().enabled = true;
+                    item.transform.GetChild(2).GetComponent<Renderer>().enabled = true;
                     item.transform.GetChild(1).gameObject.SetActive(true);
                 }
             }
